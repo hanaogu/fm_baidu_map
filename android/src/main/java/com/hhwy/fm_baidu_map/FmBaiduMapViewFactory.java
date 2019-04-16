@@ -29,7 +29,7 @@ public class FmBaiduMapViewFactory extends PlatformViewFactory {
      */
     public MapView createView(String name){
         if ( _list.containsKey(name)){
-            System.out.println("has mapview："+name);
+//            System.out.println("has mapview："+name);
             return  _list.get(name).view();
         }
         FmBaiduMapView view = new FmBaiduMapView(name,_registrar,this);

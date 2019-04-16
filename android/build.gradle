@@ -34,5 +34,6 @@ android {
 
     dependencies {
         implementation fileTree(include: ['*.jar'], dir: 'libs')
+        implementation 'pub.devrel:easypermissions:2.0.1'
     }
 }

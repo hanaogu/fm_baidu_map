@@ -1,8 +1,8 @@
 name: fm_baidu_map
 description: fm_baidu_map
-version: 0.0.1
-author:
-homepage:
+version: 0.0.2
+author: hanaogu <hanaogu@gmail.com>
+homepage: https://github.com/hanaogu/fm_baidu_map
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

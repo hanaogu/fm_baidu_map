@@ -66,7 +66,14 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
+  fm_fit:
+    dependency: "direct main"
+    description:
+      name: fm_fit
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.2"
   matcher:
     dependency: transitive
     description:

@@ -1,9 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
+import './over_types/types.dart';
 
+/// 百度定位
 class FmBaiduLocation {
-  static const MethodChannel _channel =
-      const MethodChannel('fm_baidu_map');
+  static const MethodChannel _channel = const MethodChannel('fm_baidu_map');
   MethodChannel _eventChannel;
   String _name;
   FmBaiduLocation() {
@@ -11,36 +12,35 @@ class FmBaiduLocation {
     _name = uuid.v1();
   }
   Future init({
-    bool isBaidu = true,
     Map options = const {},
-    void onLocation(Map arg),
+    void onLocation(FmBaiduLocationInfo arg),
   }) async {
     await _channel.invokeMethod("newInstanceLocation", {
       "name": _name,
-      "isBaidu": isBaidu,
+      "isBaidu": true,
       "options": options,
     });
     // 监听事件
     _eventChannel = new MethodChannel(_name)
       ..setMethodCallHandler((MethodCall methodCall) {
         if (onLocation != null) {
-          onLocation(methodCall.arguments);
+          onLocation(FmBaiduLocationInfo.create(methodCall.arguments));
         }
       });
   }
 
   /// 开始定位
-  void start() {
-    _eventChannel.invokeMethod("start");
+  Future start() async {
+    await _eventChannel.invokeMethod("start");
   }
 
   /// 结束定位
-  void stop() {
-    _eventChannel.invokeMethod("stop");
+  Future stop() async {
+    await _eventChannel.invokeMethod("stop");
   }
 
   /// 销毁
-  void dispose() {
-    _eventChannel.invokeMethod("dispose");
+  Future dispose() async {
+    await _eventChannel.invokeMethod("dispose");
   }
 }

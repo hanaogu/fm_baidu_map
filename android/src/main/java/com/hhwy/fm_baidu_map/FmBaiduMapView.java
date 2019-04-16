@@ -6,10 +6,12 @@ import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.map.TextOptions;
@@ -52,6 +54,14 @@ public class FmBaiduMapView extends FmToolsBase{
             _list.put(id,item);
         }
 
+        /**
+         * 获取一个对象
+         * @param id
+         * @return
+         */
+        FmOverlayItem get(String id){
+            return _list.get(id);
+        }
         /**
          * 移除一个对象
          * @param id
@@ -127,6 +137,23 @@ public class FmBaiduMapView extends FmToolsBase{
             _list.clear();
         }
     }
+    void _clickOverlay(Overlay overlay){
+        if ( overlay == null ){
+            return;
+        }
+        Bundle bundle  = overlay.getExtraInfo();
+        if ( bundle == null ){
+            return;
+        }
+        String id = bundle.getString("id");
+        String layer = bundle.getString("layer");
+        if ( _overlays.containsKey(layer) ){
+            FmOverlayItem it = _overlays.get(layer).get(id);
+            if ( it != null ){
+                invokeMethod("click_overlay",it.config.toString());
+            }
+        }
+    }
     /**
      * 构造函数
      * @param registrar
@@ -147,6 +174,20 @@ public class FmBaiduMapView extends FmToolsBase{
             @Override
             public void onMapRenderFinished() {
                 FmBaiduMapView.this.invokeMethod("onMapRenderFinished",null);
+            }
+        });
+        _bmp.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                _clickOverlay(marker);
+                return true;
+            }
+        });
+        _bmp.setOnPolylineClickListener(new BaiduMap.OnPolylineClickListener() {
+            @Override
+            public boolean onPolylineClick(Polyline polyline) {
+                _clickOverlay(polyline);
+                return false;
             }
         });
         _bmp.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
@@ -410,7 +451,8 @@ public class FmBaiduMapView extends FmToolsBase{
                     if ( it.getValue().remove(item.getString("id")) ){
                         OverlayOptions option = _createOptions(item,false);
                         if ( option != null ) {
-                            it.getValue().add(item.getString("id"), _bmp.addOverlay(option), item);
+                            _addOver(item,_bmp.addOverlay(option));
+//                            it.getValue().add(item.getString("id"), _bmp.addOverlay(option), item);
                         }
                         break;
                     }
@@ -588,6 +630,10 @@ public class FmBaiduMapView extends FmToolsBase{
             }else{
                 item = _overlays.get(obj.getString("layer"));
             }
+            Bundle bundle = new Bundle();
+            bundle.putString("id",obj.getString("id"));
+            bundle.putString("layer",obj.getString("layer"));
+            it.setExtraInfo(bundle);
             item.add(obj.getString("id"), it, obj);
         } catch (JSONException e) {
             e.printStackTrace();

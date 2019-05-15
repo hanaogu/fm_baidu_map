@@ -2,13 +2,13 @@
 
 fm_baidu_map
 
-## Getting Started
+## 百度地图 iOS & android
+## 功能包含百度地图绘制及事件监听功能
+### 地图组件类
+`final FmBaiduMap _map = FmBaiduMap();`
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.io/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+### 定位组件类
+`final FmBaiduLocation _location = FmBaiduLocation();`
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+
+![效果图](./image1.jpg)

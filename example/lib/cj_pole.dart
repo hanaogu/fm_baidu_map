@@ -1,7 +1,6 @@
 import 'package:fm_baidu_map/fm_baidu_map.dart';
 import './cj_base.dart';
 import './bsmap_cj_controller.dart';
-import 'package:fm_fit/fm_fit.dart';
 import './cjtypes/pole.dart';
 
 class BsCJPole extends BsCJBase {

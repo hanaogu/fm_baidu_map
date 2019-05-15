@@ -16,7 +16,7 @@ class FmMapOverlaysMark extends FmMapOverlays {
     this.text,
     this.textSize = 16,
     this.textColor = 0xFF000000,
-    this.rotate,
+    this.rotate = 0.0,
     this.anchorX = 0.5,
     this.anchorY = 0.5,
     this.scale = 1.0,
@@ -27,20 +27,20 @@ class FmMapOverlaysMark extends FmMapOverlays {
     }
   }
   String id;
-  String layer = "0";
-  bool visible = true;
+  String layer;
+  bool visible;
   int zIndex;
   FmMapPoint point;
   String icon;
-  bool draggable = false;
+  bool draggable;
   String title;
   String text;
-  int textSize = 16;
-  int textColor = 0xFF000000;
-  double rotate = 0.0;
-  double anchorX = 0.5;
-  double anchorY = 0.5;
-  double scale = 1.0;
+  int textSize;
+  int textColor;
+  double rotate;
+  double anchorX;
+  double anchorY;
+  double scale;
 
   /// 删除标注
   @override

@@ -41,14 +41,14 @@ public class FmToolsBase {
      * @param name 名称
      * @param registrar flutter初始类
      */
-    public FmToolsBase(String name, PluginRegistry.Registrar registrar){
+    public FmToolsBase(final Object imp, String name, PluginRegistry.Registrar registrar){
         _name = name;
         _registrar = registrar;
         _channel = new MethodChannel(_registrar.messenger(),_name);
         _channel.setMethodCallHandler(new MethodChannel.MethodCallHandler(){
             @Override
             public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
-                FmToolsBase.onMethodCall(FmToolsBase.this,methodCall,result);
+                FmToolsBase.onMethodCall(imp,methodCall,result);
             }
         });
     }
@@ -58,7 +58,7 @@ public class FmToolsBase {
      * @param method 方法名称
      * @param arguments 参数
      */
-    public  void invokeMethod(String method, Object arguments){
+    public void invokeMethod(String method, Object arguments){
         if ( _channel ==null ){return;}
         _channel.invokeMethod(method, arguments);
     }
@@ -85,7 +85,7 @@ public class FmToolsBase {
             if (call.arguments != null) {
                 Method method = clazz.getDeclaredMethod(call.method, JSONObject.class);
                 method.setAccessible(true);
-                Object r = method.invoke(imp, new JSONObject(call.arguments.toString()));
+                Object r = method.invoke(imp, new JSONObject((Map) call.arguments));
                 result.success(r);
             } else {
                 Method method = clazz.getDeclaredMethod(call.method);
@@ -140,5 +140,25 @@ public class FmToolsBase {
             return temp;
         }
         return bitmap;
+    }
+    public HashMap JsonObject2HashMap(JSONObject jo) {
+        HashMap<String,Object> hm = new HashMap<>();
+        for (Iterator<String> keys = jo.keys(); keys.hasNext();) {
+            try {
+                String key1 = keys.next();
+//                if (jo.get(key1) instanceof JSONObject) {
+//                    JsonObject2HashMap((JSONObject) jo.get(key1));
+//                    continue;
+//                }
+                if(key1.equals("icon")){
+                    continue;
+                }
+                hm.put(key1, jo.get(key1).toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return hm;
     }
 }

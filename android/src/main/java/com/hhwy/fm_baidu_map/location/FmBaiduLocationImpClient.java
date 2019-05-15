@@ -9,11 +9,12 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
-public abstract class FmBaiduLocationImpClient extends FmToolsBase {
+public abstract class FmBaiduLocationImpClient{
+    FmToolsBase _ftb;
     // flutter通道名称
     String _name;
     FmBaiduLocationImpClient(String name,PluginRegistry.Registrar registrar){
-        super(name,registrar);
+        _ftb = new FmToolsBase(this, name, registrar);
     }
 
     /**
@@ -32,4 +33,11 @@ public abstract class FmBaiduLocationImpClient extends FmToolsBase {
      * @return
      */
     public abstract boolean isStarted();
+
+    /**
+     * 销毁
+     */
+    public void dispose() {
+        _ftb.dispose();
+    };
 }

@@ -15,9 +15,13 @@ import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.map.TextOptions;
+import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -26,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +39,9 @@ import java.util.Map;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry;
 
-public class FmBaiduMapView extends FmToolsBase{
-    private MapView _view;
+public class FmBaiduMapView{
+    private FmToolsBase _ftb;
+    private TextureMapView _view;
     private BaiduMap _bmp;
     private final FmBaiduMapViewFactory _factory;
     private final HashMap<String, FmOverlay>_overlays = new HashMap<>();
@@ -150,7 +156,7 @@ public class FmBaiduMapView extends FmToolsBase{
         if ( _overlays.containsKey(layer) ){
             FmOverlayItem it = _overlays.get(layer).get(id);
             if ( it != null ){
-                invokeMethod("click_overlay",it.config.toString());
+                _ftb.invokeMethod("click_overlay",_ftb.JsonObject2HashMap(it.config));
             }
         }
     }
@@ -159,21 +165,21 @@ public class FmBaiduMapView extends FmToolsBase{
      * @param registrar
      */
     FmBaiduMapView(String name,PluginRegistry.Registrar registrar, FmBaiduMapViewFactory factory){
-        super(name,registrar);
-        _view=new MapView(registrar.activity());
+        _ftb = new FmToolsBase(this, name, registrar);
+        _view=new TextureMapView(registrar.activity());
         _bmp = _view.getMap();
         _bmp.setMyLocationEnabled(true);
         _factory = factory;
         _bmp.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                FmBaiduMapView.this.invokeMethod("onMapLoaded",null);
+                _ftb.invokeMethod("onMapLoaded",null);
             }
         });
         _bmp.setOnMapRenderCallbadk(new BaiduMap.OnMapRenderCallback() {
             @Override
             public void onMapRenderFinished() {
-                FmBaiduMapView.this.invokeMethod("onMapRenderFinished",null);
+                _ftb.invokeMethod("onMapRenderFinished",null);
             }
         });
         _bmp.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
@@ -193,7 +199,7 @@ public class FmBaiduMapView extends FmToolsBase{
         _bmp.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
             @Override
             public void onMapStatusChangeStart(MapStatus mapStatus) {
-                _onMapStatus("onMapStatusChangeStart",mapStatus);
+                _onMapStatus("setOnMapStatusChangeListener",mapStatus);
             }
 
             @Override
@@ -221,7 +227,7 @@ public class FmBaiduMapView extends FmToolsBase{
         m.put("rotate",mapStatus.rotate);
         m.put("screenX",mapStatus.targetScreen.x);
         m.put("screenY",mapStatus.targetScreen.y);
-        invokeMethod(name,m);
+        _ftb.invokeMethod(name,m);
     }
 
     /**
@@ -289,7 +295,7 @@ public class FmBaiduMapView extends FmToolsBase{
      * 获取内部view
      * @return MapView
      */
-    MapView view(){return _view;}
+    TextureMapView view(){return _view;}
 
     /**
      * 设置地图定位到指定点
@@ -526,21 +532,30 @@ public class FmBaiduMapView extends FmToolsBase{
             }else if( type.equalsIgnoreCase("mark")){
                 LatLng center = new LatLng(obj.getDouble("latitude"), obj.getDouble("longitude"));
                 MarkerOptions mk = new MarkerOptions().position(center);
-                Bitmap bitmap = BitmapDescriptorFactory.fromAsset(obj.getString("icon")).getBitmap();
+//                Bitmap bitmap = BitmapDescriptorFactory.fromAsset(obj.getString("icon")).getBitmap();
+                AssetManager assetManager = _ftb._registrar.context().getAssets();
+                String key = _ftb._registrar.lookupKeyForAsset(obj.getString("icon"));
+
+                Bitmap bitmap = null;
+                try {
+                    bitmap = BitmapFactory.decodeStream(assetManager.open(key));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if ( obj.has("scale") && obj.getDouble("scale")!=1.0 ){
-                    bitmap = FmToolsBase.imageScale(bitmap,(float)obj.getDouble("scale"),(float)obj.getDouble("scale"));
+                    bitmap = _ftb.imageScale(bitmap,(float)obj.getDouble("scale"),(float)obj.getDouble("scale"));
                 }
                 if (obj.has("text")) {
                     // 在图片上绘制文字
                     float textSize =-1;
                     if ( obj.has("textSize")){
-                        textSize = (float)obj.getDouble("textSize");
+                        textSize = (float)obj.getInt("textSize");
                     }
                     int textColor = Color.BLACK;
                     if ( obj.has("textColor")){
                         textColor = obj.getInt("textColor");
                     }
-                    bitmap = FmToolsBase.textBitmap(bitmap,obj.getString("text"),textSize, textColor);
+                    bitmap = _ftb.textBitmap(bitmap,obj.getString("text"),textSize, textColor);
                 }
                 mk.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
                 if ( obj.has("draggable") ){
@@ -643,9 +658,8 @@ public class FmBaiduMapView extends FmToolsBase{
     /**
      * 销毁
      */
-    @Override
     public void dispose(){
-        super.dispose();
+        _ftb.dispose();
         _bmp = null;
         _view = null;
     }

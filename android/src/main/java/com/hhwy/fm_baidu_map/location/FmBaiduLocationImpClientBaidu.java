@@ -25,7 +25,7 @@ public class FmBaiduLocationImpClientBaidu extends FmBaiduLocationImpClient {
     // 构造函数
     public FmBaiduLocationImpClientBaidu(String name, PluginRegistry.Registrar registrar, JSONObject options) {
         super(name, registrar);
-        _client = new LocationClient(_registrar.activity());
+        _client = new LocationClient(registrar.activity());
         // 设置
         LocationClientOption locationClientOption = new LocationClientOption();
         locationClientOption.setCoorType("bd09ll");
@@ -48,7 +48,7 @@ public class FmBaiduLocationImpClientBaidu extends FmBaiduLocationImpClient {
                 jsonObject.put("latitude", bdLocation.getLatitude());
                 jsonObject.put("longitude", bdLocation.getLongitude());
                 jsonObject.put("bearing", bdLocation.getDirection());
-                invokeMethod("onLocation", jsonObject);
+                _ftb.invokeMethod("onLocation", jsonObject);
             }
         };
         _client.registerLocationListener(_listener);

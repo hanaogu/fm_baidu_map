@@ -39,6 +39,11 @@ class FmBaiduLocation {
     await _eventChannel.invokeMethod("stop");
   }
 
+  /// 结束定位
+  Future isStarted() async {
+    return await _eventChannel.invokeMethod("isStarted");
+  }
+
   /// 销毁
   Future dispose() async {
     await _eventChannel.invokeMethod("dispose");

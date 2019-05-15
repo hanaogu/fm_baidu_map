@@ -11,22 +11,32 @@ class BsMapCJLineController {
   FmMapPoint locationPoint;
   // 当前屏幕中心点
   FmMapPoint centerPoint;
-  // 坐标状态改变时
-  FmBaiduMapStatusChange onMapStatusChange;
+  // 坐标状态开始改变时
+  FmBaiduMapStatus onMapStatusChangeStart;
+  // 坐标状态改变中
+  FmBaiduMapStatus onMapStatusChange;
+  // 坐标状态改变结束
+  FmBaiduMapStatus onMapStatusChangeFinish;
   // 消息
   FmBaiduMessage onMessage;
 
   // 橡皮线
   FmMapOverlaysLine _shirr;
 
+  void onMapStatusChangeStartPro(FmMapStatusInfo info){
+    if ( _shirr != null ){
+      _shirr.setVisible(false);
+    }
+  }
   // 坐标状态改变时
-  void onMapStatusChangePro(FmMapStatusInfo info) {
-    if (onMapStatusChange != null) {
-      onMapStatusChange(info);
+  void onMapStatusChangeFinishPro(FmMapStatusInfo info)async {
+    if (onMapStatusChangeFinish != null) {
+      onMapStatusChangeFinish(info);
     }
     if (_shirr != null) {
+      await _shirr.setVisible(true);
       _shirr.points[1] = info.point;
-      _shirr.update();
+      await _shirr.update();
     }
   }
 

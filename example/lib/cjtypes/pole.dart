@@ -30,7 +30,7 @@ class BsDevMapInfoPole extends BsDevMapInfo<FmMapOverlaysMark> {
     if (overlay == null) {
       return;
     }
-    overlay.icon = sel ? "circle4.png" : "circle3.png";
+    overlay.icon = sel ? "lib/images/circle4.png" : "lib/images/circle3.png";
     await overlay.update();
   }
 
@@ -43,7 +43,7 @@ class BsDevMapInfoPole extends BsDevMapInfo<FmMapOverlaysMark> {
     var overlay = await controller.drawer.addOverlay(FmMapOverlaysMark(
       point: controller.centerPoint,
       layer: "pole",
-      icon: "circle3.png",
+      icon: "lib/images/circle3.png",
       text: config != null ? config["number"] : null,
       textSize: fit.t(54).ceil(),
       textColor: 0xFFFFFFFF,

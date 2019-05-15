@@ -15,7 +15,8 @@ fm_baidu_map
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-
+  s.dependency 'BMKLocationKit'
+  s.dependency 'BaiduMapKit'
   s.ios.deployment_target = '8.0'
 end
 

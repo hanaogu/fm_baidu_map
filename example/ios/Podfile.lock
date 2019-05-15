@@ -1,0 +1,33 @@
+PODS:
+  - BaiduMapKit (4.3.0)
+  - BMKLocationKit (1.5.0)
+  - Flutter (1.0.0)
+  - fm_baidu_map (0.0.1):
+    - BaiduMapKit
+    - BMKLocationKit
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - fm_baidu_map (from `.symlinks/plugins/fm_baidu_map/ios`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - BaiduMapKit
+    - BMKLocationKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  fm_baidu_map:
+    :path: ".symlinks/plugins/fm_baidu_map/ios"
+
+SPEC CHECKSUMS:
+  BaiduMapKit: 63575d9236b4112c4ff76391df637f2a6dc1ada8
+  BMKLocationKit: 40d267478acd8704ddebd0e9deaddc727b13df9f
+  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  fm_baidu_map: 3d52cd81382f743c67bceb8c6286ec9bcc0fb799
+
+PODFILE CHECKSUM: a41b522321eb28214d588fee00e35f4c144e9ac8
+
+COCOAPODS: 1.6.1

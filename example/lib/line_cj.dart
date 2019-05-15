@@ -39,8 +39,18 @@ class _BsMapCJLineState extends State<BsMapCJLine> {
           widget.controller.onMessage(method, config);
         }
       },
+      onMapStatusChange: widget.controller?.onMapStatusChange,
+      onMapStatusChangeStart: (FmMapStatusInfo info) {
+        if (widget.controller != null) {
+          widget.controller.onMapStatusChangeStartPro(info);
+        }
+        if (widget.controller != null &&
+            widget.controller.onMapStatusChangeStart != null) {
+          widget.controller.onMapStatusChangeStart(info);
+        }
+      },
       // 坐标及状态变化
-      onMapStatusChange: (FmMapStatusInfo info) {
+      onMapStatusChangeFinish: (FmMapStatusInfo info) {
         if (!info.point.isValid()) {
           return;
         }
@@ -48,9 +58,14 @@ class _BsMapCJLineState extends State<BsMapCJLine> {
         _centerPoint = info.point;
         if (widget.controller != null) {
           widget.controller.centerPoint = _centerPoint;
+          print(_centerPoint.latitude.toString());
         }
         if (widget.controller != null) {
-          widget.controller.onMapStatusChangePro(info);
+          widget.controller.onMapStatusChangeFinishPro(info);
+        }
+        if (widget.controller != null &&
+            widget.controller.onMapStatusChangeFinish != null) {
+          widget.controller.onMapStatusChangeFinish(info);
         }
       },
     );
@@ -76,8 +91,8 @@ class _BsMapCJLineState extends State<BsMapCJLine> {
   }
 
   @override
-  void dispose() async {
-    await _location.dispose();
+  void dispose() {
+    _location.dispose();
     super.dispose();
   }
 

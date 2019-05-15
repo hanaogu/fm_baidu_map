@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.TextureMapView;
 
 import org.json.JSONObject;
 
@@ -27,7 +28,7 @@ public class FmBaiduMapViewFactory extends PlatformViewFactory {
      * 创建一个视图
      * @param name 名字
      */
-    public MapView createView(String name){
+    public TextureMapView createView(String name){
         if ( _list.containsKey(name)){
 //            System.out.println("has mapview："+name);
             return  _list.get(name).view();

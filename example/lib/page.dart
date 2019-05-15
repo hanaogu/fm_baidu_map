@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fm_baidu_map/fm_baidu_map.dart';
-import 'package:fm_baidu_map/fm_baidu_map.dart';
-import 'package:vector_math/vector_math.dart' hide Colors;
-import 'dart:math';
 import './bsmap_cj_controller.dart';
 import './line_cj.dart';
 import './cj_base.dart';
@@ -22,7 +18,7 @@ class _PageTestState extends State<PageTest> {
     super.initState();
     _controller = BsMapCJLineController(onMessage: (method, config) {
       if (method == "click_overlay") {
-        _cj.onClick(json.decode(config));
+        _cj.onClick(config);
       }
     });
     _cj = BsCJPole(_controller);

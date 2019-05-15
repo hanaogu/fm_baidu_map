@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
+import 'dart:io';
 import './over_types/types.dart';
 import './over_types/base.dart';
 
-typedef void FmBaiduMapStatusChange(FmMapStatusInfo info);
+typedef void FmBaiduMapStatus(FmMapStatusInfo info);
 typedef void FmBaiduMessage(String name, Object arg);
 
 /// 地图
@@ -19,7 +20,12 @@ class FmBaiduMap {
   FmBaiduMap() {
     var uuid = new Uuid();
     _name = uuid.v1();
-    _map = AndroidView(
+    _map = Platform.isIOS ? UiKitView(
+        viewType: "FmBaiduMapView",
+        creationParams: {"name": _name},
+        creationParamsCodec: StandardMessageCodec(),
+      )
+        : AndroidView(
       viewType: "FmBaiduMapView",
       creationParams: {"name": _name},
       creationParamsCodec: StandardMessageCodec(),
@@ -45,8 +51,12 @@ class FmBaiduMap {
    */
   void init({
     FmBaiduMessage onMessage,
-    // 坐标状态改变时
-    FmBaiduMapStatusChange onMapStatusChange,
+    // 坐标状态开始改变时
+    FmBaiduMapStatus onMapStatusChangeStart,
+    // 坐标状态改变中
+    FmBaiduMapStatus onMapStatusChange,
+    // 坐标状态改变结束
+    FmBaiduMapStatus onMapStatusChangeFinish,
   }) {
     _eventChannel = new MethodChannel(_name)
       ..setMethodCallHandler((MethodCall methodCall) {
@@ -54,8 +64,16 @@ class FmBaiduMap {
             onMapStatusChange != null) {
           onMapStatusChange(FmMapStatusInfo.create(methodCall.arguments));
         }
+        if (methodCall.method == "onMapStatusChangeStart" &&
+            onMapStatusChangeStart != null) {
+          onMapStatusChangeStart(FmMapStatusInfo.create(methodCall.arguments));
+        }
+        if (methodCall.method == "onMapStatusChangeFinish" &&
+            onMapStatusChangeFinish != null) {
+          onMapStatusChangeFinish(FmMapStatusInfo.create(methodCall.arguments));
+        }
         if (onMessage != null) {
-          onMessage(methodCall.method, methodCall.arguments);
+          onMessage(methodCall.method, methodCall.arguments as Map);
         }
       });
   }

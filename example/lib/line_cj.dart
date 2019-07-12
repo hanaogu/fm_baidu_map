@@ -130,10 +130,52 @@ class _BsMapCJLineState extends State<BsMapCJLine> {
                 ),
               ),
               onTap: () {
-                if (_locationPoint == null || !_locationPoint.isValid()) {
-                  return;
-                }
-                _map.setCenter(_locationPoint);
+                // _map.setMapType(3);
+                // _map.addPolygonByName(
+                //   "中国",
+                //   showPolygon: false,
+                //   showLine: true,
+                //   linewidth: 5,
+                //   lineColor: 0xAA00FF88,
+                //   fitScreen: true,
+                //   fillColor: 0xAA00FF00,
+                // );
+                // _map.addPolygonByName(
+                //   "北京",
+                //   showPolygon: false,
+                //   showLine: true,
+                //   linewidth: 5,
+                //   lineColor: 0xAA00FF88,
+                //   fillColor: 0xAA00FF00,
+                // );
+                // _map.addPolygonByName("上海",
+                //     showPolygon: false,
+                //     showLine: true,
+                //     linewidth: 5,
+                //     lineColor: 0xAA00FF88,
+                //     fillColor: 0xAA00FF00);
+                // _map.addPolygonByName("西安",
+                //     showPolygon: false,
+                //     showLine: true,
+                //     linewidth: 5,
+                //     lineColor: 0xAA00FF88,
+                //     fillColor: 0xAA00FF00);
+                // _map.addPolygonByName("河南",
+                //     showPolygon: false,
+                //     showLine: true,
+                //     linewidth: 5,
+                //     lineColor: 0xAA00FF88,
+                //     fillColor: 0xAA00FF00);
+                // _map.addPolygonByName("河北",
+                //     showPolygon: false,
+                //     showLine: true,
+                //     linewidth: 5,
+                //     lineColor: 0xAA00FF88,
+                //     fillColor: 0xAA00FF00);
+               if (_locationPoint == null || !_locationPoint.isValid()) {
+                 return;
+               }
+               _map.setCenter(_locationPoint);
               },
             ),
           )

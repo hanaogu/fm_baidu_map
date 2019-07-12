@@ -20,16 +20,17 @@ class FmBaiduMap {
   FmBaiduMap() {
     var uuid = new Uuid();
     _name = uuid.v1();
-    _map = Platform.isIOS ? UiKitView(
-        viewType: "FmBaiduMapView",
-        creationParams: {"name": _name},
-        creationParamsCodec: StandardMessageCodec(),
-      )
+    _map = Platform.isIOS
+        ? UiKitView(
+            viewType: "FmBaiduMapView",
+            creationParams: {"name": _name},
+            creationParamsCodec: StandardMessageCodec(),
+          )
         : AndroidView(
-      viewType: "FmBaiduMapView",
-      creationParams: {"name": _name},
-      creationParamsCodec: StandardMessageCodec(),
-    );
+            viewType: "FmBaiduMapView",
+            creationParams: {"name": _name},
+            creationParamsCodec: StandardMessageCodec(),
+          );
   }
   /*
    * 获取2点距离
@@ -182,7 +183,7 @@ class FmBaiduMap {
     FmMapPoint point, {
     double direction = 0,
     double accuracy = 500,
-  }) async{
+  }) async {
     await _eventChannel.invokeMethod("setCurrentPoint", {
       "latitude": point.latitude,
       "longitude": point.longitude,
@@ -205,7 +206,7 @@ class FmBaiduMap {
     double overlook = 1,
     double rotate = 360,
     double zoom = 0,
-  }) async{
+  }) async {
     await _eventChannel.invokeMethod("setCenter", {
       "latitude": point.latitude,
       "longitude": point.longitude,
@@ -213,5 +214,47 @@ class FmBaiduMap {
       "rotate": rotate,
       "zoom": zoom
     });
+  }
+
+  /*
+   * String city 城市名称
+   */
+  Future addPolygonByName(
+    String city, {
+    bool showLine = false,
+    int linewidth = 1,
+    int lineColor = 0,
+    bool showPolygon = true,
+    int borderWidth = 1,
+    int borderColor = 0,
+    int fillColor = 0xAAFFFF00,
+    bool fitScreen = false,
+  }) async {
+    await _eventChannel.invokeMethod(
+      "addPolygonByName",
+      {
+        "name": city,
+        "showLine": showLine,
+        "linewidth": linewidth,
+        "lineColor": lineColor,
+        "showPolygon": showPolygon,
+        "borderWidth": borderWidth,
+        "borderColor": borderColor,
+        "fillColor": fillColor,
+        "fitScreen": fitScreen,
+      },
+    );
+  }
+
+  // public static final int MAP_TYPE_NORMAL = 1;
+  // public static final int MAP_TYPE_SATELLITE = 2;
+  // public static final int MAP_TYPE_NONE = 3;
+  Future setMapType(int type) async {
+    await _eventChannel.invokeMethod(
+      "setMapType",
+      {
+        "type": type
+      },
+    );
   }
 }

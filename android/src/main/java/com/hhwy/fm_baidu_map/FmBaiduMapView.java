@@ -11,12 +11,19 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.PolygonOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.district.DistrictResult;
+import com.baidu.mapapi.search.district.DistrictSearch;
+import com.baidu.mapapi.search.district.DistrictSearchOption;
+import com.baidu.mapapi.search.district.OnGetDistricSearchResultListener;
 
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -41,6 +48,7 @@ import io.flutter.plugin.common.PluginRegistry;
 
 public class FmBaiduMapView{
     private FmToolsBase _ftb;
+    protected final PluginRegistry.Registrar _registrar;
     private TextureMapView _view;
     private BaiduMap _bmp;
     private final FmBaiduMapViewFactory _factory;
@@ -165,6 +173,7 @@ public class FmBaiduMapView{
      * @param registrar
      */
     FmBaiduMapView(String name,PluginRegistry.Registrar registrar, FmBaiduMapViewFactory factory){
+        _registrar = registrar;
         _ftb = new FmToolsBase(this, name, registrar);
         _view=new TextureMapView(registrar.activity());
         _bmp = _view.getMap();
@@ -654,7 +663,77 @@ public class FmBaiduMapView{
             e.printStackTrace();
         }
     }
+    /**
+     * 根据地域名称绘制区域
+     * @param obj
+     */
+    public void addPolygonByName(final JSONObject obj ){
+        _registrar.activity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final DistrictSearch mDistrictSearch = DistrictSearch.newInstance();
+                OnGetDistricSearchResultListener listener = new OnGetDistricSearchResultListener() {
+                    @Override
+                    public void onGetDistrictResult(DistrictResult districtResult) {
+                        System.out.println(districtResult.error);
+                        if (null != districtResult && districtResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                            //获取边界坐标点，并展示
+                            if (districtResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                                List<List<LatLng>> polyLines = districtResult.getPolylines();
+                                if (polyLines == null) {
+                                    return;
+                                }
+                                try {
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    for (List<LatLng> polyline : polyLines) {
+                                        if ( obj.getBoolean("showLine") ) {
+                                            OverlayOptions ooPolyline11 = new PolylineOptions().width(obj.getInt("linewidth"))
+                                                    .points(polyline).dottedLine(true).color(obj.getInt("lineColor"));
+                                            _bmp.addOverlay(ooPolyline11);
+                                        }
+                                        if ( obj.getBoolean("showPolygon") ) {
+                                            OverlayOptions ooPolygon = new PolygonOptions().points(polyline)
+                                                    .stroke(new Stroke(obj.getInt("borderWidth"), obj.getInt("borderColor"))).fillColor(obj.getInt("fillColor"));
+                                            _bmp.addOverlay(ooPolygon);
+                                        }
+//                                        for (LatLng latLng : polyline) {
+//                                            builder.include(latLng);
+//                                        }
+                                    }
+                                    if ( obj.getBoolean("fitScreen")) {
+                                        _bmp.setMapStatus(MapStatusUpdateFactory.newLatLngBounds(builder.build()));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
+                            }
+                        }
+                        mDistrictSearch.destroy();
+                    }
+                };
+                mDistrictSearch.setOnDistrictSearchListener(listener);
+                try {
+                    mDistrictSearch.searchDistrict(new DistrictSearchOption().cityName(obj.getString("name")));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * 设置地图类型
+     * @param obj
+     */
+    public void setMapType(final JSONObject obj){
+        try {
+            int type = obj.getInt("type");
+            _bmp.setMapType(type);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 销毁
      */

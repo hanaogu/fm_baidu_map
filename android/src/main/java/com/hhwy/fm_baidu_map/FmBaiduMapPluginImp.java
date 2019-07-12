@@ -1,10 +1,8 @@
 package com.hhwy.fm_baidu_map;
 
-import android.graphics.Point;
 
 import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
-import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.hhwy.fm_baidu_map.location.FmBaiduLocationImpClient;
